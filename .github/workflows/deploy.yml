@@ -13,16 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Login to Azure
+        uses: azure/login@v2
         with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'flaky-test-detector-app'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        run: |
+          az webapp up \
+            --name flaky-test-detector-app \
+            --resource-group flaky-detector-rg \
+            --runtime "PYTHON:3.10" \
+            --sku B1 \
+            --location centralindia
